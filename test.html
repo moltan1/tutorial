@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar Unit Tests</title>
+    <style>
+        body { font-family: monospace; padding: 20px; }
+        .test-suite { margin-bottom: 20px; }
+        .test-case { margin-left: 20px; margin-bottom: 5px; }
+        .pass { color: green; }
+        .fail { color: red; font-weight: bold; }
+        #test-results { margin-top: 20px; border-top: 1px solid #ccc; padding-top: 10px;}
+        /* Minimal styles for script.js to not throw errors */
+        #current-month-year, #prev-month, #next-month { display: none; }
+        table { border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 2px; }
+    </style>
+</head>
+<body>
+    <h1>Calendar Unit Tests</h1>
+
+    <!-- DOM elements expected by script.js -->
+    <header>
+        <div class="month-year-display">
+            <span id="current-month-year">Month Year</span>
+        </div>
+        <div class="nav-buttons">
+            <button id="prev-month">Previous</button>
+            <button id="next-month">Next</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="calendar-container">
+            <h2>Current Month</h2>
+            <table id="current-month-calendar">
+                <thead>
+                    <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+                </thead>
+                <tbody><!-- Test script will manipulate this --></tbody>
+            </table>
+        </div>
+        <div class="calendar-container">
+            <h2>Next Month</h2>
+            <table id="next-month-calendar">
+                <thead>
+                    <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </main>
+
+    <div id="test-results">
+        <h2>Test Results:</h2>
+        <!-- Test results will be appended here by test_script.js -->
+    </div>
+
+    <!-- Main script - load it but tests will call functions directly or mock interactions -->
+    <script src="script.js"></script>
+    <!-- Test script -->
+    <script src="test_script.js"></script>
+</body>
+</html>

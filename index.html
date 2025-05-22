@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="month-year-display">
+            <span id="current-month-year">Month Year</span>
+        </div>
+        <div class="nav-buttons">
+            <button id="prev-month">Previous</button>
+            <button id="next-month">Next</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="calendar-container">
+            <h2>Current Month</h2>
+            <table id="current-month-calendar">
+                <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Calendar days will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="calendar-container">
+            <h2>Next Month</h2>
+            <table id="next-month-calendar">
+                <thead>
+                    <tr>
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Calendar days will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
