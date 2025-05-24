@@ -42,6 +42,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         cell.classList.add('today');
                     }
 
+                    // Check for existing memo for this date
+                    const cellDate = new Date(year, month, dayOfMonth);
+                    if (loadMemo(cellDate)) {
+                        cell.classList.add('has-memo');
+                    }
+
                     cell.addEventListener('click', () => {
                         selectedDate = new Date(year, month, dayOfMonth);
                         selectedDateDisplay.textContent = `メモの対象日: ${year}年${month + 1}月${dayOfMonth}日`;
@@ -140,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedDate) {
             saveMemo(selectedDate, memoInput.value);
             alert('メモを保存しました。');
+            displayCalendars(); // Refresh calendars to show has-memo class
         } else {
             alert('日付を選択してください。');
         }

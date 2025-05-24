@@ -236,20 +236,67 @@ document.addEventListener('DOMContentLoaded', function() {
 
             simulateDateCellClick(currentMonthCalendarBody, 12); // Select Oct 12
             memoInput.value = "テストメモ12日";
-            saveMemoButton.click(); // Simulate save button click
+            saveMemoButton.click(); // Simulate save button click (this calls displayCalendars in script.js)
 
             const dateForMemo = new Date(2023, 9, 12);
             const dateKeyDay12 = formatDateToKey(dateForMemo);
             assertEquals("テストメモ12日", localStorage.getItem(dateKeyDay12), 'Memo for Oct 12 should be saved to localStorage');
+            
+            const cellDay12 = getCellByDayText(currentMonthCalendarBody, 12);
+            assert(cellDay12 && cellDay12.classList.contains('has-memo'), 'Oct 12 cell should have .has-memo class after saving');
 
-            // Clear input and re-select to test loading
+            // Clear input and re-select to test loading (and .has-memo again)
             memoInput.value = ''; 
             simulateDateCellClick(currentMonthCalendarBody, 12); // Re-select Oct 12
             assertEquals("テストメモ12日", memoInput.value, 'Memo for Oct 12 should be loaded into input after re-selection');
+            assert(cellDay12 && cellDay12.classList.contains('has-memo'), 'Oct 12 cell should still have .has-memo class on re-selection');
+
 
             // Select a date with no memo (Oct 13)
             simulateDateCellClick(currentMonthCalendarBody, 13);
             assertEquals('', memoInput.value, 'Memo input should be cleared when selecting Oct 13 (no memo)');
+            const cellDay13 = getCellByDayText(currentMonthCalendarBody, 13);
+            assert(cellDay13 && !cellDay13.classList.contains('has-memo'), 'Oct 13 cell should NOT have .has-memo class');
+        },
+        'testHasMemoClassOnInitialLoad': function() {
+            beforeEachMemoTest();
+            currentDate = new Date(2023, 9, 1); // Set to Oct 2023
+
+            // Pre-save a memo for Oct 10
+            const dateOct10 = new Date(2023, 9, 10);
+            const keyOct10 = formatDateToKey(dateOct10);
+            localStorage.setItem(keyOct10, "Initial memo for Oct 10");
+
+            if (typeof displayCalendars === "function") displayCalendars(); // Initial render
+
+            const cellOct10 = getCellByDayText(currentMonthCalendarBody, 10);
+            assert(cellOct10 && cellOct10.classList.contains('has-memo'), 'Oct 10 cell should have .has-memo on initial load');
+
+            const cellOct11 = getCellByDayText(currentMonthCalendarBody, 11); // A day without a pre-saved memo
+            assert(cellOct11 && !cellOct11.classList.contains('has-memo'), 'Oct 11 cell should NOT have .has-memo on initial load');
+        },
+        'testHasMemoClassAcrossNavigation': function() {
+            beforeEachMemoTest();
+            currentDate = new Date(2023, 9, 1); // Oct 2023
+            if (typeof displayCalendars === "function") displayCalendars();
+
+            // Save a memo for Oct 10
+            simulateDateCellClick(currentMonthCalendarBody, 10);
+            memoInput.value = "Nav test memo for Oct 10";
+            saveMemoButton.click(); // This calls displayCalendars
+
+            let cellOct10 = getCellByDayText(currentMonthCalendarBody, 10);
+            assert(cellOct10 && cellOct10.classList.contains('has-memo'), 'Oct 10 should have .has-memo after save');
+
+            nextMonthButton.click(); // Navigate to Nov 2023
+            prevMonthButton.click(); // Navigate back to Oct 2023
+
+            // Re-fetch cell after navigation and re-render
+            cellOct10 = getCellByDayText(currentMonthCalendarBody, 10); 
+            assert(cellOct10 && cellOct10.classList.contains('has-memo'), 'Oct 10 should still have .has-memo after navigating away and back');
+            
+            const cellOct11 = getCellByDayText(currentMonthCalendarBody, 11);
+            assert(cellOct11 && !cellOct11.classList.contains('has-memo'), 'Oct 11 (no memo) should NOT have .has-memo after navigation');
         },
         'testMemoAlertsOnSave': function() {
             beforeEachMemoTest();

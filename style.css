@@ -141,3 +141,24 @@ td.selected {
 #save-memo-button:hover {
     background-color: #218838; /* Darker green on hover */
 }
+
+/* Style for dates with memos */
+td.has-memo {
+    /* A noticeable bottom border to indicate a memo exists */
+    border-bottom: 3px solid #4CAF50; /* A medium green */
+    /* Adjust padding to ensure text isn't too close to the new border if needed */
+    /* padding-bottom: 7px; */ /* Original padding is 10px, so 10px - 3px = 7px */
+}
+
+/* Ensure the .selected style overrides the .has-memo border if a selected day also has a memo */
+/* The .selected class already has a border, so this might not be strictly necessary */
+/* td.selected.has-memo { */
+    /* border-bottom: 1px solid #0056b3; /* Match selected border if needed */
+/* } */
+
+/* If a day is today AND has a memo, the today background should remain, 
+   and the green border from .has-memo should still be visible. */
+/* td.today.has-memo { */
+    /* background-color: #ffeb3b; /* from .today */
+    /* border-bottom: 3px solid #4CAF50; /* from .has-memo */
+/* } */
