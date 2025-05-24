@@ -49,6 +49,15 @@
                 <tbody></tbody>
             </table>
         </div>
+
+        <div id="memo-section" style="display: none;"> <!-- Hidden for test page, script.js interacts with it -->
+            <h3 id="selected-date-display">メモの対象日: ---</h3>
+            <textarea id="memo-input" placeholder="メモを入力..."></textarea>
+            <button id="save-memo-button">メモを保存</button>
+            <div id="saved-memos-display">
+                <!-- Dates with memos might be listed here later -->
+            </div>
+        </div>
     </main>
 
     <div id="test-results">

@@ -5,7 +5,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const prevMonthButton = document.getElementById('prev-month');
     const nextMonthButton = document.getElementById('next-month');
 
+    // Memo related DOM elements
+    const selectedDateDisplay = document.getElementById('selected-date-display');
+    const memoInput = document.getElementById('memo-input');
+    const saveMemoButton = document.getElementById('save-memo-button');
+
     let currentDate = new Date(); // This will be our reference for the "current" month view
+    let selectedDate = null;
 
     function generateCalendar(month, year, tableBody) {
         tableBody.innerHTML = ''; // Clear previous cells
@@ -29,11 +35,29 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Empty cells after the last day
                     cell.textContent = '';
                 } else {
-                    cell.textContent = date;
+                    const dayOfMonth = date; // Capture current date for the cell
+                    cell.textContent = dayOfMonth;
                     const today = new Date();
-                    if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                    if (dayOfMonth === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
                         cell.classList.add('today');
                     }
+
+                    cell.addEventListener('click', () => {
+                        selectedDate = new Date(year, month, dayOfMonth);
+                        selectedDateDisplay.textContent = `メモの対象日: ${year}年${month + 1}月${dayOfMonth}日`;
+                        
+                        // Remove 'selected' class from previously selected cell
+                        const allCells = tableBody.getRootNode().querySelectorAll('.calendar-container td.selected');
+                        allCells.forEach(c => c.classList.remove('selected'));
+                        const allCellsNext = nextMonthCalendarBody.getRootNode().querySelectorAll('.calendar-container td.selected');
+                         allCellsNext.forEach(c => c.classList.remove('selected'));
+
+
+                        // Add 'selected' class to current cell
+                        cell.classList.add('selected');
+                        
+                        displayMemoForSelectedDate();
+                    });
                     date++;
                 }
                 row.appendChild(cell);
@@ -42,6 +66,27 @@ document.addEventListener('DOMContentLoaded', function() {
             if (date > daysInMonth && i >= Math.ceil((daysInMonth + startingDay) / 7) -1) { //Don't create unnecessary rows
                 break;
             }
+        }
+    }
+
+    function saveMemo(dateObj, memoText) {
+        if (!dateObj) return;
+        const dateKey = `memo_${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+        localStorage.setItem(dateKey, memoText);
+    }
+
+    function loadMemo(dateObj) {
+        if (!dateObj) return '';
+        const dateKey = `memo_${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${String(dateObj.getDate()).padStart(2, '0')}`;
+        return localStorage.getItem(dateKey) || '';
+    }
+
+    function displayMemoForSelectedDate() {
+        if (selectedDate) {
+            memoInput.value = loadMemo(selectedDate);
+        } else {
+            memoInput.value = '';
+            selectedDateDisplay.textContent = 'メモの対象日: ---'; // Reset if no date selected
         }
     }
 
@@ -89,4 +134,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initial display
     updateDayHeaders(); // Update day headers to Japanese
     displayCalendars();
+    displayMemoForSelectedDate(); // Ensure memo area is clear initially
+
+    saveMemoButton.addEventListener('click', () => {
+        if (selectedDate) {
+            saveMemo(selectedDate, memoInput.value);
+            alert('メモを保存しました。');
+        } else {
+            alert('日付を選択してください。');
+        }
+    });
 });
