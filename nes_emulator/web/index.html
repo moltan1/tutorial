@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NES Emulator</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; background-color: #f0f0f0; }
+        #emulator-container { display: flex; flex-direction: column; align-items: center; margin-top: 20px; }
+        #nes-screen { border: 1px solid black; width: 512px; height: 480px; image-rendering: pixelated; image-rendering: -moz-crisp-edges; image-rendering: crisp-edges; background-color: #333; }
+        #controls { margin-top: 20px; display: grid; grid-template-areas: ". up . ." "left . right ." ". down . ." "select start A B"; grid-gap: 10px; }
+        .btn { padding: 15px 20px; font-size: 16px; border: 1px solid #ccc; border-radius: 5px; background-color: #fff; cursor: pointer; user-select: none; }
+        .btn:active { background-color: #ddd; }
+        #btn-up { grid-area: up; }
+        #btn-left { grid-area: left; }
+        #btn-right { grid-area: right; }
+        #btn-down { grid-area: down; }
+        #btn-select { grid-area: select; }
+        #btn-start { grid-area: start; }
+        #btn-A { grid-area: A; background-color: #ff6b6b; color: white;}
+        #btn-B { grid-area: B; background-color: #ffb366; color: white;}
+        #rom-loader { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>NES Emulator</h1>
+
+    <div id="emulator-container">
+        <canvas id="nes-screen" width="256" height="240"></canvas>
+        <div id="rom-loader">
+            <label for="rom-file">Load ROM:</label>
+            <input type="file" id="rom-file" accept=".nes">
+        </div>
+        <div id="controls">
+            <button id="btn-up" class="btn">Up</button>
+            <button id="btn-left" class="btn">Left</button>
+            <button id="btn-right" class="btn">Right</button>
+            <button id="btn-down" class="btn">Down</button>
+            <button id="btn-select" class="btn">Select</button>
+            <button id="btn-start" class="btn">Start</button>
+            <button id="btn-A" class="btn">A</button>
+            <button id="btn-B" class="btn">B</button>
+        </div>
+    </div>
+
+    <!-- Load Emulator Core Scripts -->
+    <!-- These will be loaded and initialized by main.js -->
+    <script src="../core/cpu.js"></script>
+    <script src="../core/ppu.js"></script>
+    <script src="../core/cartridge.js"></script>
+    <script src="../core/nes.js"></script> 
+
+    <!-- Main script for web interface logic -->
+    <script src="main.js"></script>
+</body>
+</html>
