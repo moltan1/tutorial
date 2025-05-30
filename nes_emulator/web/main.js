@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("Failed to initialize the NES emulator components. Check console for details.");
         return;
     }
-    
+
     // Initial screen clear or welcome message
     ctx.fillStyle = 'rgb(10, 10, 30)'; // Darker blue
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -85,10 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn(`Button with ID ${id} not found.`);
         }
     }
-    
+
     const keyMap = {
         'arrowup': 'UP', 'arrowdown': 'DOWN', 'arrowleft': 'LEFT', 'arrowright': 'RIGHT',
-        'enter': 'START', 'shift': 'SELECT', 
+        'enter': 'START', 'shift': 'SELECT',
         'z': 'A', 'x': 'B', // Common keyboard mappings
         'a': 'A', 's': 'B'  // Alternative common keyboard mappings
     };

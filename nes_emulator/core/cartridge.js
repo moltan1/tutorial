@@ -6,10 +6,10 @@ class Cartridge {
 
         this.prgRom = null; // Program ROM data
         this.chrRom = null; // Character ROM data (pattern tables)
-        
+
         this.prgBanks = 0;  // Number of 16KB PRG ROM banks
         this.chrBanks = 0;  // Number of 8KB CHR ROM banks
-        
+
         this.mapperId = 0;
         this.mirroring = 0; // 0 for horizontal, 1 for vertical
 
@@ -30,7 +30,7 @@ class Cartridge {
 
         this.prgBanks = romBytes[4];
         this.chrBanks = romBytes[5];
-        
+
         const flags6 = romBytes[6];
         const flags7 = romBytes[7];
         // const flags8 = romBytes[8]; // PRG RAM size
@@ -85,7 +85,7 @@ class Cartridge {
             this.chrRom = new Uint8Array(8192); // Allocate CHR RAM
             console.log("CHR ROM Banks is 0. Assuming 8KB CHR RAM (to be managed by PPU/Mapper).");
         }
-        
+
         this.valid = true;
         console.log("ROM loaded successfully (or at least parsed).");
         return true;
@@ -124,7 +124,7 @@ class Cartridge {
     // PPU memory map for pattern tables: $0000-$1FFF
     readChr(address) {
         if (!this.valid || !this.chrRom) return 0;
-        
+
         if (address >= 0x0000 && address <= 0x1FFF) {
             return this.chrRom[address];
         }

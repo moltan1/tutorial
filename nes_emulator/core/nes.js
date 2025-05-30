@@ -8,7 +8,7 @@ class NES {
     constructor(canvasContext) {
         console.log("NES Emulator initializing...");
         this.canvasContext = canvasContext;
-        
+
         this.cpu = new CPU(this); // Pass NES reference to CPU for bus-like access
         this.ppu = new PPU(this); // Pass NES reference to PPU
         this.cartridge = new Cartridge(this); // Pass NES reference to Cartridge
@@ -49,7 +49,7 @@ class NES {
         this.cpu.reset();
         this.ppu.reset();
         // Cartridge mapper reset might be needed here if it has state
-        // this.cartridge.reset(); 
+        // this.cartridge.reset();
         console.log("NES System Reset complete.");
         // PC should be set by cpu.reset() from reset vector $FFFC read via cartridge
         // For now, cpu.reset() has a placeholder. We need to implement CPU memory mapping to cartridge.
@@ -95,7 +95,7 @@ class NES {
         // Number of CPU cycles to run per frame.
         // PPU runs 3 times faster than CPU. ~29780 PPU cycles per frame.
         // So, ~9926 CPU cycles per frame.
-        const targetCpuCyclesPerFrame = this.cyclesPerFrame / 3; 
+        const targetCpuCyclesPerFrame = this.cyclesPerFrame / 3;
         let cyclesThisFrame = 0;
 
         while (cyclesThisFrame < targetCpuCyclesPerFrame) {
@@ -103,7 +103,7 @@ class NES {
                 this.stop();
                 return;
             }
-            
+
             // Execute one CPU instruction, returns number of cycles taken by the instruction
             const cpuCycles = this.cpu.step(); // cpu.step() needs to be implemented
             cyclesThisFrame += cpuCycles;
@@ -119,7 +119,7 @@ class NES {
                 }
             }
         }
-        
+
         // Request next frame
         this.animationFrameId = requestAnimationFrame(() => this.mainLoop());
     }
@@ -188,7 +188,7 @@ class NES {
             // console.warn(`NES_cpuWrite: Unhandled write to $${address.toString(16)} with value $${value.toString(16)}`);
         }
     }
-    
+
     // --- PPU Memory Bus (Simplified) ---
     // The PPU has its own address space for CHR ROM/RAM, Nametables, Palettes
     // $0000 - $1FFF: Pattern Tables (from Cartridge CHR ROM or CHR RAM)
@@ -240,23 +240,23 @@ class NES {
             // console.warn(`NES_ppuWrite: Unhandled write to PPU address $${address.toString(16)} with value $${value.toString(16)}`);
         }
     }
-    
+
     mapNametableAddress(address) {
         address &= 0x2FFF; // Work with $2000-$2FFF range
         const table = (address >> 10) & 0x3; // Which nametable (0, 1, 2, 3)
-        
+
         // Default to mapper-controlled or NROM for now
         // NROM Mirroring (fixed for now, should be set by cartridge.mirroring)
         // 0 = Horizontal (A B / A B) -> Tables 0 and 1 are distinct, 2 is mirror of 0, 3 is mirror of 1
         // 1 = Vertical   (A A / B B) -> Tables 0 and 2 are distinct, 1 is mirror of 0, 3 is mirror of 2
-        
+
         // This logic is simplified and assumes internal VRAM for nametables.
         // Real nametable mapping is complex and PPU VRAM might only hold 2 nametables.
         // For now, let's use a simplified mapping: map all to a base 2KB region in ppu.vram
         // e.g., ppu.vram[0x2000-0x23FF], ppu.vram[0x2400-0x27FF] etc.
         // The PPU's vram array is 16KB, but only 2KB is typically for nametables on the NES itself.
         // The cartridge can provide more, or map CIRAM ($A000 on cart) to these addresses.
-        
+
         // Simplified for now: use first 2KB of PPU.vram for nametables,
         // and apply mirroring based on cartridge.mirroring.
         // Base address for nametables within the PPU's VRAM might be 0x2000, or could be 0x0000 if CHR RAM is used for pattern tables.
@@ -298,7 +298,7 @@ class NES {
         }
         // Add player 2 if needed
     }
-    
+
     readController(controller) {
         let data = 0;
         if (controller.strobe) {
