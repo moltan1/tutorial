@@ -1,7 +1,85 @@
 use rand::seq::SliceRandom;
 use std::io::{self, Write}; // Write を追加して flush を使えるようにする
 
+const HANGMAN_STAGES: [&str; 7] = [
+    // 0 guesses left (full hangman)
+    r"
+  -----
+  |   |
+  |   O
+  |  /|\
+  |  / \
+  |
+-------",
+    // 1 guess left
+    r"
+  -----
+  |   |
+  |   O
+  |  /|\
+  |  /
+  |
+-------",
+    // 2 guesses left
+    r"
+  -----
+  |   |
+  |   O
+  |  /|\
+  |
+  |
+-------",
+    // 3 guesses left
+    r"
+  -----
+  |   |
+  |   O
+  |  /|
+  |
+  |
+-------",
+    // 4 guesses left
+    r"
+  -----
+  |   |
+  |   O
+  |   |
+  |
+  |
+-------",
+    // 5 guesses left
+    r"
+  -----
+  |   |
+  |   O
+  |
+  |
+  |
+-------",
+    // 6 guesses left (initial state)
+    r"
+  -----
+  |   |
+  |
+  |
+  |
+  |
+-------",
+];
+
 const WORDS: &[&str] = &["rust", "hangman", "programming", "computer", "keyboard"];
+
+fn get_hangman_art(remaining_guesses: u32) -> &'static str {
+    let stage_index = remaining_guesses as usize;
+    // Ensure index is within bounds, flip logic so 0 remaining = last stage (full hangman)
+    // and max remaining = first stage (empty gallows).
+    // Our HANGMAN_STAGES is defined with 0 being full hangman, 6 being empty.
+    if stage_index < HANGMAN_STAGES.len() {
+        HANGMAN_STAGES[stage_index]
+    } else {
+        HANGMAN_STAGES[0] // Should not happen if remaining_guesses is kept <= 6
+    }
+}
 
 fn select_word() -> &'static str {
     let mut rng = rand::thread_rng();
@@ -27,7 +105,7 @@ fn initialize_game() -> GameState {
 }
 
 fn main() {
-    println!("Welcome to Hangman!");
+    println!("ハングマンへようこそ！");
     let mut game = initialize_game();
 
     loop {
@@ -39,7 +117,7 @@ fn main() {
         let guess = match get_player_guess(&game.guessed_letters) {
             Ok(g) => g,
             Err(e) => {
-                println!("Input error: {}", e);
+                println!("入力エラー: {}", e);
                 // 短いポーズを入れるとユーザーがエラーを認識しやすい (オプション)
                 // std::thread::sleep(std::time::Duration::from_secs(1));
                 continue;
@@ -47,9 +125,9 @@ fn main() {
         };
 
         if process_guess(&mut game, guess) {
-            println!("Correct guess: '{}' is in the word!", guess);
+            println!("正解！ '{}' は単語に含まれています。", guess);
         } else {
-            println!("Incorrect guess: '{}' is not in the word.", guess);
+            println!("不正解 '{}' は単語に含まれていません。", guess);
         }
 
         // 短いポーズ (オプション)
@@ -62,40 +140,40 @@ fn main() {
             println!("
 ========================");
             if status == GameStatus::Won {
-                println!("Congratulations! You won!");
-                println!("The word was: {}", game.secret_word);
+                println!("おめでとうございます！あなたの勝ちです！");
+                println!("正解の単語は: {}", game.secret_word);
             } else { // GameStatus::Lost
-                println!("Game Over! You ran out of guesses.");
-                println!("The word was: {}", game.secret_word);
+                println!("ゲームオーバー！推測回数を使い果たしました。");
+                println!("正解の単語は: {}", game.secret_word);
             }
             println!("========================");
             break;
         }
     }
-    println!("Thanks for playing!");
+    println!("遊んでくれてありがとう！");
 }
 
 fn get_player_guess(guessed_letters: &[char]) -> Result<char, String> {
-    print!("Please enter your guess (a single letter): ");
-    io::stdout().flush().unwrap(); // プロンプトをすぐに表示するために flush
+    print!("一文字推測してください: "); // プロンプトも日本語化
+    io::stdout().flush().map_err(|e| format!("プロンプト表示に失敗: {}", e))?;
 
-    let mut guess = String::new();
-    io::stdin().read_line(&mut guess)
-        .map_err(|e| format!("Failed to read line: {}", e))?;
+    let mut guess_input = String::new(); // 変数名を変更して 'guess' と区別
+    io::stdin().read_line(&mut guess_input)
+        .map_err(|e| format!("入力の読み取りに失敗しました: {}", e))?;
 
-    let trimmed_guess = guess.trim();
-    if trimmed_guess.len() != 1 {
-        return Err("Please enter a single letter.".to_string());
+    let trimmed_guess = guess_input.trim();
+    if trimmed_guess.chars().count() != 1 { // .len() はバイト長なので .chars().count() を使う
+        return Err("一文字だけ入力してください。".to_string());
     }
 
     let guessed_char = trimmed_guess.chars().next().unwrap().to_ascii_lowercase();
 
     if !guessed_char.is_alphabetic() {
-        return Err("Please enter an alphabet character.".to_string());
+        return Err("アルファベットを入力してください。".to_string());
     }
 
     if guessed_letters.contains(&guessed_char) {
-        return Err(format!("You have already guessed '{}'. Try another letter.", guessed_char));
+        return Err(format!("文字「{}」は既に推測済みです。別の文字を入力してください。", guessed_char));
     }
 
     Ok(guessed_char)
@@ -148,6 +226,7 @@ fn check_game_status(game_state: &GameState) -> GameStatus {
 }
 
 fn display_game_state(game_state: &GameState) {
+    print!("\x1B[2J\x1B[1;1H"); // 画面クリアとカーソルを左上に移動
     // オプション: 画面クリア
     // print!("[2J[1;1H");
 
@@ -156,14 +235,17 @@ fn display_game_state(game_state: &GameState) {
     println!("|      H A N G M A N   |");
     println!("+----------------------+");
 
+    println!("{}", get_hangman_art(game_state.remaining_guesses)); // AA表示を追加
+
     // ハングマンのAA表示エリア (今回はシンプルに)
     // display_hangman_art(game_state.remaining_guesses); // 将来的に実装
 
+    // 表示も一部日本語化
     println!("
-Word: {}", game_state.displayed_word.chars().map(|c| c.to_string()).collect::<Vec<String>>().join(" "));
-    println!("Guesses left: {}", game_state.remaining_guesses);
+単語: {}", game_state.displayed_word.chars().map(|c| c.to_string()).collect::<Vec<String>>().join(" "));
+    println!("残り推測回数: {}", game_state.remaining_guesses);
 
     let guessed_letters_str = game_state.guessed_letters.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(", ");
-    println!("Guessed letters: [{}]", guessed_letters_str);
+    println!("推測済みの文字: [{}]", guessed_letters_str);
     println!("------------------------");
 }
