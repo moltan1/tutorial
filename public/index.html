@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>征西府探索システム - 南北朝時代の九州南朝史</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts for Elegant Japanese Typography -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Shippori Mincho', 'Noto Serif JP', serif;
+      background-color: #f7f5f0; /* Traditional Japanese paper color */
+      color: #2b2b2b;
+    }
+    .japanese-border {
+      border-image: linear-gradient(to right, #b45309, #d97706, #b45309) 1;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header Banner / Title -->
+  <header class="bg-stone-900 text-stone-100 py-10 px-4 border-b-4 border-amber-600 shadow-xl relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    <div class="max-w-6xl mx-auto text-center relative z-10">
+      <div class="inline-block border border-amber-500 px-4 py-1 text-xs tracking-widest text-amber-400 uppercase mb-3">南北朝割拠・九州の奇跡</div>
+      <h1 id="app-title" class="text-4xl md:text-5xl font-extrabold tracking-wide text-amber-500 mb-4 drop-shadow-md">征西府探索システム</h1>
+      <p id="app-intro" class="text-stone-300 max-w-3xl mx-auto leading-relaxed text-sm md:text-base px-2">
+        ロード中...
+      </p>
+    </div>
+  </header>
+
+  <!-- Navigation Menu -->
+  <nav class="bg-stone-800 text-stone-200 sticky top-0 z-50 shadow-md">
+    <div class="max-w-6xl mx-auto px-4 flex flex-wrap justify-center md:justify-between items-center py-3">
+      <div class="flex space-x-1 md:space-x-4">
+        <button onclick="switchTab('dashboard')" id="btn-dashboard" class="px-3 py-2 rounded text-sm font-semibold transition bg-amber-700 text-white shadow"><i class="fa-solid fa-house mr-1"></i>概要</button>
+        <button onclick="switchTab('timeline')" id="btn-timeline" class="px-3 py-2 rounded text-sm font-semibold transition hover:bg-stone-700 text-stone-300"><i class="fa-solid fa-clock-rotate-left mr-1"></i>歴史年表</button>
+        <button onclick="switchTab('bases')" id="btn-bases" class="px-3 py-2 rounded text-sm font-semibold transition hover:bg-stone-700 text-stone-300"><i class="fa-solid fa-map-location-dot mr-1"></i>重要拠点</button>
+        <button onclick="switchTab('characters')" id="btn-characters" class="px-3 py-2 rounded text-sm font-semibold transition hover:bg-stone-700 text-stone-300"><i class="fa-solid fa-user-shield mr-1"></i>主要人物</button>
+        <button onclick="switchTab('quiz')" id="btn-quiz" class="px-3 py-2 rounded text-sm font-semibold transition hover:bg-stone-700 text-stone-300"><i class="fa-solid fa-circle-question mr-1"></i>歴史クイズ</button>
+      </div>
+      <div class="mt-2 md:mt-0 flex items-center bg-stone-700 rounded-full px-3 py-1 text-sm text-stone-300">
+        <i class="fa-solid fa-bookmark text-amber-500 mr-1"></i>しおり数: <span id="bookmark-count" class="font-bold ml-1 text-amber-400">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6">
+
+    <!-- Global Search Bar (Only shown on relevant tabs via logic, or placed as a helpful tool) -->
+    <div class="mb-6 bg-white p-4 rounded-lg shadow border border-stone-200">
+      <div class="relative max-w-xl mx-auto">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-stone-400"></i>
+        <input type="text" id="search-input" oninput="handleSearch()" placeholder="年表、人物、拠点からキーワード検索..." class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-stone-300 focus:outline-none focus:ring-2 focus:ring-amber-600 bg-stone-50 text-stone-800 text-sm">
+      </div>
+    </div>
+
+    <!-- Active Tab Panel Container -->
+    <div id="tab-content" class="min-h-[500px]">
+
+      <!-- DASHBOARD TAB -->
+      <section id="pane-dashboard" class="tab-pane space-y-6">
+        <!-- Main Overview Card -->
+        <div class="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-stone-200 relative overflow-hidden">
+          <div class="border-l-4 border-amber-600 pl-4 mb-6">
+            <h2 class="text-2xl md:text-3xl font-bold text-stone-800">征西府（せいせいふ）とは</h2>
+            <p class="text-stone-500 text-sm">九州に咲いた、南朝全盛期の奇跡の統治機関</p>
+          </div>
+          <p class="text-stone-700 leading-relaxed mb-6 text-sm md:text-base">
+            征西府は、南北朝の争乱期において、後醍醐天皇の皇子・懐良親王を長として九州に樹立された南朝方の全盛組織です。
+            京都を中心とする本州では南朝が徐々に圧倒され衰退していく中、九州では強力な名将・菊池武光の支援を得たことで、
+            針摺原の戦い、そして日本三大合戦の一つ「筑後川の戦い」で北朝を撃破し、ついには古来の政治的中枢である太宰府の制圧に成功しました。
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-amber-50 p-5 rounded-lg border border-amber-100">
+              <div class="text-amber-700 text-2xl mb-2"><i class="fa-solid fa-chess-king"></i></div>
+              <h3 class="font-bold text-stone-800 mb-1">日本国王としての外交</h3>
+              <p class="text-xs text-stone-600 leading-relaxed">中国の明朝から「日本国王」に冊封され、対等な貿易関係を樹立。独自の政権としての正統性を海外に示しました。</p>
+            </div>
+            <div class="bg-amber-50 p-5 rounded-lg border border-amber-100">
+              <div class="text-amber-700 text-2xl mb-2"><i class="fa-solid fa-gavel"></i></div>
+              <h3 class="font-bold text-stone-800 mb-1">大宰府独自の政権経営</h3>
+              <p class="text-xs text-stone-600 leading-relaxed">約12年間にわたる太宰府統治の中で、独自の年号・通貨・治安維持や文書発給を行い、平和的な繁栄を実現しました。</p>
+            </div>
+            <div class="bg-amber-50 p-5 rounded-lg border border-amber-100">
+              <div class="text-amber-700 text-2xl mb-2"><i class="fa-solid fa-mountain"></i></div>
+              <h3 class="font-bold text-stone-800 mb-1">最期まで消えぬ南朝の灯</h3>
+              <p class="text-xs text-stone-600 leading-relaxed">宿敵・今川了俊に太宰府を奪われてからも、高良山でのゲリラ戦、そして奥深い矢部村に拠点を移し、最期まで抗戦を続けました。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Learning Guide / Highlight -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-stone-800 text-stone-100 p-6 rounded-xl shadow-lg border border-amber-600">
+            <h3 class="text-xl font-bold text-amber-500 mb-3"><i class="fa-solid fa-graduation-cap mr-2"></i>このシステムの使い方</h3>
+            <ul class="space-y-3 text-sm text-stone-300">
+              <li class="flex items-start"><i class="fa-solid fa-circle-check text-amber-400 mr-2 mt-1"></i><span><strong>歴史年表:</strong> 征西将軍宮の任命から、南北朝合一までの波乱の歴史を時系列で網羅。詳細な裏話も確認できます。</span></li>
+              <li class="flex items-start"><i class="fa-solid fa-circle-check text-amber-400 mr-2 mt-1"></i><span><strong>重要拠点:</strong> 九州各地に転々とした征西府の拠点をビジュアルマップ風の位置関係とともに解説。</span></li>
+              <li class="flex items-start"><i class="fa-solid fa-circle-check text-amber-400 mr-2 mt-1"></i><span><strong>主要人物:</strong> 征西府を巡る重要プレイヤーたちの魅力を深掘り。</span></li>
+              <li class="flex items-start"><i class="fa-solid fa-circle-check text-amber-400 mr-2 mt-1"></i><span><strong>歴史クイズ:</strong> 習得した知識を判定するミニゲーム。目指せ！全問正解の「征西大将軍」ランク！</span></li>
+            </ul>
+          </div>
+          <div class="bg-white p-6 rounded-xl shadow-lg border border-stone-200 flex flex-col justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-stone-800 mb-2"><i class="fa-solid fa-bookmark text-amber-600 mr-2"></i>しおり機能（お気に入り保存）</h3>
+              <p class="text-stone-600 text-sm leading-relaxed">
+                年表のイベントや人物、重要拠点に「しおり（お気に入り）」を挟むことができます。後からいつでもチェックしたい箇所、学びを深めたいトピックにしおりをして学習効率をアップさせましょう！
+              </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-stone-100 flex justify-between items-center">
+              <span class="text-xs text-stone-400">※ブラウザ（localStorage）に自動保存されます</span>
+              <button onclick="showBookmarkedItems()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1.5 rounded transition shadow-sm"><i class="fa-solid fa-list mr-1"></i>しおり一覧を見る</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TIMELINE TAB -->
+      <section id="pane-timeline" class="tab-pane hidden space-y-4">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-2xl font-bold text-stone-800"><i class="fa-solid fa-clock-rotate-left text-amber-700 mr-2"></i>征西府興亡年表</h2>
+          <span class="text-xs bg-stone-200 px-2.5 py-1 rounded text-stone-600 font-bold" id="timeline-count">全0件</span>
+        </div>
+        <div id="timeline-list" class="space-y-4">
+          <!-- Timeline items will be rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- BASES TAB -->
+      <section id="pane-bases" class="tab-pane hidden space-y-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-2">
+          <div>
+            <h2 class="text-2xl font-bold text-stone-800"><i class="fa-solid fa-map-location-dot text-amber-700 mr-2"></i>重要拠点と変遷マップ</h2>
+            <p class="text-xs text-stone-500">伊予から薩摩、肥後、太宰府、そして終焉の矢部村へ。西海を駆け抜けた拠点の足跡</p>
+          </div>
+          <span class="text-xs bg-stone-200 px-2.5 py-1 rounded text-stone-600 font-bold" id="bases-count">全0件</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Interactive Map Container (Left column) -->
+          <div class="lg:col-span-5 bg-stone-900 rounded-xl p-4 shadow-xl text-stone-200 border border-stone-800 relative min-h-[400px] flex flex-col justify-between">
+            <div class="text-center">
+              <h3 class="text-amber-500 font-bold text-sm tracking-wide"><i class="fa-solid fa-compass mr-1"></i>征西府 勢力・拠点変遷概略図</h3>
+              <p class="text-[10px] text-stone-400">拠点を選択すると、詳細にスクロールします</p>
+            </div>
+
+            <!-- Conceptual Visual Map representing Kyushu and surroundings -->
+            <div class="relative w-full aspect-square bg-stone-950 rounded-lg border border-stone-800 overflow-hidden my-4" id="map-visual-container">
+              <!-- Grid background representing historical landscape -->
+              <div class="absolute inset-0 opacity-20 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+
+              <!-- Map Regions Label -->
+              <div class="absolute top-2 right-4 text-[10px] text-stone-500">本州 (中国地方) ➜</div>
+              <div class="absolute top-[42%] right-2 text-[10px] text-stone-500">◀ 伊予 (四国)</div>
+              <div class="absolute bottom-2 left-4 text-[10px] text-stone-500">◀ 薩摩</div>
+
+              <!-- Map connections (lines between chronological bases) -->
+              <svg class="absolute inset-0 w-full h-full pointer-events-none" id="map-svg-lines"></svg>
+
+              <!-- Base pins will be generated dynamically over this conceptual canvas -->
+              <div id="map-pins-container" class="absolute inset-0"></div>
+            </div>
+
+            <div class="bg-stone-950 p-2.5 rounded text-[11px] text-stone-300 border border-stone-800 leading-relaxed">
+              <strong class="text-amber-500">地理的特徴：</strong>
+              瀬戸内(伊予)を中継点とし、北朝勢力を迂回して薩摩へ上陸。その後、南九州から菊池(肥後)へと北上し、最終的に大宰府を掌握するという、極めてダイナミックな機動戦略が見て取れます。
+            </div>
+          </div>
+
+          <!-- Base Cards List (Right column) -->
+          <div class="lg:col-span-7 space-y-4 max-h-[550px] overflow-y-auto pr-1" id="bases-list">
+            <!-- Base cards will be rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- CHARACTERS TAB -->
+      <section id="pane-characters" class="tab-pane hidden space-y-4">
+        <div class="flex justify-between items-center mb-2">
+          <h2 class="text-2xl font-bold text-stone-800"><i class="fa-solid fa-user-shield text-amber-700 mr-2"></i>主要人物事典</h2>
+          <span class="text-xs bg-stone-200 px-2.5 py-1 rounded text-stone-600 font-bold" id="characters-count">全0件</span>
+        </div>
+        <div id="characters-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Characters will be rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- QUIZ TAB -->
+      <section id="pane-quiz" class="tab-pane hidden space-y-6">
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-stone-200">
+          <div class="border-l-4 border-amber-600 pl-4 mb-4">
+            <h2 class="text-2xl font-bold text-stone-800">征西府歴史挑戦クイズ</h2>
+            <p class="text-xs text-stone-500">探索で培った知識を試し、高位の称号を勝ち取ろう！</p>
+          </div>
+
+          <!-- Quiz Setup/Landing -->
+          <div id="quiz-start-view" class="text-center py-10 space-y-4">
+            <div class="text-6xl text-amber-600 animate-bounce mb-2"><i class="fa-solid fa-trophy"></i></div>
+            <h3 class="text-lg font-bold text-stone-800">征西府・九州南朝クイズ (全5問)</h3>
+            <p class="text-stone-600 text-sm max-w-md mx-auto leading-relaxed">
+              懐良親王の苦難の下向から大宰府での栄華、そして終焉の戦いまで。全問正解すれば最高位「征西大将軍」の称号が授与されます。
+            </p>
+            <button onclick="startQuiz()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-6 py-2.5 rounded-full transition shadow-lg transform hover:scale-105">挑戦を開始する</button>
+          </div>
+
+          <!-- Quiz Main Panel -->
+          <div id="quiz-active-view" class="hidden space-y-6 py-4">
+            <!-- Progress Bar -->
+            <div class="w-full bg-stone-100 rounded-full h-2.5">
+              <div id="quiz-progress-bar" class="bg-amber-600 h-2.5 rounded-full" style="width: 20%"></div>
+            </div>
+            <div class="flex justify-between items-center text-xs text-stone-500">
+              <span id="quiz-question-number">第 1 問 / 5問</span>
+              <span id="quiz-score-indicator">現在の正解数: 0</span>
+            </div>
+
+            <!-- Question text -->
+            <div class="bg-stone-50 p-5 rounded-lg border border-stone-200">
+              <h4 id="quiz-question-text" class="text-base md:text-lg font-bold text-stone-800 leading-relaxed">質問テキストが入ります。</h4>
+            </div>
+
+            <!-- Options -->
+            <div id="quiz-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <!-- Buttons dynamically generated -->
+            </div>
+
+            <!-- Answer Feedback & Explanation -->
+            <div id="quiz-feedback" class="hidden p-4 rounded-lg border leading-relaxed text-sm">
+              <div class="flex items-center space-x-2 font-bold mb-1">
+                <span id="quiz-result-icon"></span>
+                <span id="quiz-result-text">正解！ / 不正解！</span>
+              </div>
+              <p id="quiz-explanation-text" class="text-stone-700 text-xs md:text-sm">解説文が入ります。</p>
+              <div class="mt-4 text-right">
+                <button onclick="nextQuiz()" id="btn-next-question" class="bg-stone-800 hover:bg-stone-900 text-white text-xs font-bold px-4 py-2 rounded transition shadow">次へ進む</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz Results Panel -->
+          <div id="quiz-result-view" class="hidden text-center py-10 space-y-6">
+            <div id="quiz-badge-icon" class="text-7xl text-amber-500"></div>
+            <div>
+              <h3 class="text-2xl font-bold text-stone-800 mb-1" id="quiz-rank-title">称号: 獲得称号</h3>
+              <p class="text-sm text-stone-500">あなたの正解数は <span id="quiz-final-score" class="font-bold text-amber-600 text-lg">0</span> / 5 でした。</p>
+            </div>
+            <p id="quiz-rank-description" class="text-stone-600 text-sm max-w-md mx-auto leading-relaxed">称号に関する説明が入ります。</p>
+            <div class="space-x-3">
+              <button onclick="startQuiz()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-5 py-2.5 rounded transition shadow-md"><i class="fa-solid fa-rotate-left mr-1"></i>もう一度挑戦する</button>
+              <button onclick="switchTab('dashboard')" class="bg-stone-800 hover:bg-stone-900 text-stone-200 font-bold px-5 py-2.5 rounded transition shadow-md"><i class="fa-solid fa-house mr-1"></i>トップへ戻る</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Bookmarked Items Modal / Side Panel (Hidden by default) -->
+  <div id="bookmarks-modal" class="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col border border-stone-300 overflow-hidden">
+      <div class="bg-stone-900 text-stone-100 p-4 flex justify-between items-center border-b-2 border-amber-600">
+        <h3 class="font-bold text-amber-500 flex items-center"><i class="fa-solid fa-bookmark mr-2"></i>しおり（お気に入り）一覧</h3>
+        <button onclick="closeBookmarksModal()" class="text-stone-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-grow space-y-4" id="bookmarked-list-container">
+        <!-- Bookmark items will display here -->
+      </div>
+      <div class="p-4 bg-stone-50 border-t border-stone-200 text-right">
+        <button onclick="closeBookmarksModal()" class="bg-stone-800 hover:bg-stone-900 text-stone-100 text-xs font-bold px-4 py-2 rounded transition">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Information Modal (Reusable popup for timeline events etc.) -->
+  <div id="detail-modal" class="fixed inset-0 bg-black/60 z-[100] backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[80vh] flex flex-col border border-stone-300 overflow-hidden">
+      <div class="bg-stone-900 text-stone-100 p-4 flex justify-between items-center">
+        <span id="detail-modal-tag" class="text-xs bg-amber-600 text-white px-2 py-0.5 rounded font-bold">詳細解説</span>
+        <button onclick="closeDetailModal()" class="text-stone-400 hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+      <div class="p-6 overflow-y-auto flex-grow space-y-4">
+        <h3 id="detail-modal-title" class="text-xl font-bold text-stone-800 border-b border-stone-200 pb-2">イベント名</h3>
+        <div id="detail-modal-content" class="text-stone-700 text-sm leading-relaxed space-y-3">
+          <!-- Content dynamically rendered -->
+        </div>
+      </div>
+      <div class="p-4 bg-stone-50 border-t border-stone-200 text-right">
+        <button onclick="closeDetailModal()" class="bg-stone-800 hover:bg-stone-900 text-stone-100 text-xs font-bold px-4 py-2 rounded transition">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-stone-900 text-stone-400 py-6 text-center border-t border-stone-800 text-xs">
+    <div class="max-w-6xl mx-auto px-4 space-y-2">
+      <p>&copy; 南北朝時代 征西府探索システム. All Rights Reserved.</p>
+      <p class="text-stone-600">本システムは九州南朝（征西府）の史実及び変遷をビジュアル化し、歴史学習をサポートする目的で作成されています。</p>
+    </div>
+  </footer>
+
+  <!-- App Main Javascript -->
+  <script src="/app.js"></script>
+</body>
+</html>
