@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NES Emulator</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>NES Emulator</h1>
+        <div class="nes-container">
+            <div class="screen">
+                <canvas id="nes-screen" width="256" height="240"></canvas>
+            </div>
+            <div class="controls">
+                <div class="d-pad">
+                    <button id="up">↑</button>
+                    <div class="spacer"></div>
+                    <button id="left">←</button>
+                    <button id="right">→</button>
+                    <div class="spacer"></div>
+                    <button id="down">↓</button>
+                </div>
+                <div class="buttons">
+                    <button id="select">Select</button>
+                    <button id="start">Start</button>
+                    <button id="b">B</button>
+                    <button id="a">A</button>
+                </div>
+            </div>
+        </div>
+        <div class="rom-loader">
+            <p>下のボタンをクリックして、お使いのコンピュータからNESのROMファイル（.nes）を選択してください。</p>
+            <input type="file" id="rom-file-input" accept=".nes" style="display: none;">
+            <button id="load-rom">ROMファイルを選択</button>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://unpkg.com/jsnes/dist/jsnes.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
